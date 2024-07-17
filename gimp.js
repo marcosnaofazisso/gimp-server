@@ -75,6 +75,8 @@ class GroupIronmanPlayer {
             lastActivity: this.lastActivity,
             notes: this.notes
         };
+        console.log("getData() data ====>>>", JSON.stringify(data));
+
         return data;
     }
 
@@ -92,6 +94,7 @@ class GroupIronmanPlayer {
     }
 
     update(data) {
+        console.log("update() data ====>>>", JSON.stringify(data));
         if (data.location) {
             this.updateLocation(data.location);
         }

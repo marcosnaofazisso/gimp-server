@@ -32,6 +32,7 @@ if (ENABLE_STORAGE) {
         }
         try {
             const gimpData = await gimpStorage.readJson();
+            console.log("gimpData ====>>>", JSON.stringify(gimpData));
             Object.keys(gimpData).forEach((groupName) => {
                 groups[groupName] = {};
                 Object.keys(gimpData[groupName]).forEach((gimpName) => {
@@ -161,6 +162,7 @@ app.get("/stats", (req, res) => {
         let roomsCount, clientsCount;
         // Count of groups that are stored on the server (connected or not)
         const groupsCount = Object.keys(groups).length;
+        console.log("app.get(/stats) groups ====>>>", JSON.stringify(groups));
         if (io) {
             // Count of currently connected groups
             const socketRooms = io.of("/").adapter.rooms;
@@ -168,6 +170,8 @@ app.get("/stats", (req, res) => {
             roomsCount = connectedGroups.length;
             // Count of currently connected users
             clientsCount = io.engine.clientsCount;
+            console.log("clientsCount ====>>>", JSON.stringify(clientsCount));
+
         }
         res.json([
             {
@@ -194,6 +198,7 @@ const server = http.createServer(app);
 if (!process.env.HTTP_ONLY) {
     io = new Server(server);
     io.on("connection", (socket) => {
+        console.log("socket ====>>>", JSON.stringify(socket));
         console.log("Client connected:", socket.id);
         let roomId;
 
@@ -203,6 +208,7 @@ if (!process.env.HTTP_ONLY) {
         });
 
         socket.on("connection-ack", (groupName) => {
+            console.log("groupName ====>>>", JSON.stringify(groupName));
             roomId = groupName;
             socket.join(roomId);
             console.log("Room joined:", roomId);
@@ -230,9 +236,12 @@ if (!process.env.HTTP_ONLY) {
                     return callback({ err: "Gimp data is required" });
                 }
                 const gimpData = JSON.parse(data);
+                console.log("broadcast gimpData ====>>>", JSON.stringify(gimpData));
                 handleGimpBroadcast(roomId, gimpData);
                 const gimp = groups[roomId][gimpData.name];
+                console.log("broadcast gimp ====>>>", JSON.stringify(gimp));
                 const sanitized = gimp.scrubData(data);
+                console.log("broadcast sanitized ====>>>", JSON.stringify(sanitized));
                 socket.to(roomId).emit("broadcast", sanitized);
                 callback({ success: "Broadcasted gimp data" });
             } catch (err) {
