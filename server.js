@@ -3,6 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const Storage = require("./storage");
 const Gimp = require("./gimp");
+const { stringify } = require('flatted');
 
 const PORT = process.env.PORT || 3000;
 const DATA_FILE_PATH = "./gimps.json";
@@ -198,7 +199,7 @@ const server = http.createServer(app);
 if (!process.env.HTTP_ONLY) {
     io = new Server(server);
     io.on("connection", (socket) => {
-        console.log("socket ====>>>", JSON.stringify(socket));
+        console.log("socket ====>>>", stringify(socket));
         console.log("Client connected:", socket.id);
         let roomId;
 
